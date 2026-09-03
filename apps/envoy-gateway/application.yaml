@@ -18,8 +18,9 @@ spec:
   project: default
 
   sources:
-    - repoURL: oci://docker.io/envoyproxy/gateway-crds-helm
+    - repoURL: oci://docker.io/envoyproxy
       targetRevision: v1.9.0
+      chart: gateway-crds-helm
       helm:
         valuesObject:
           crds:
@@ -27,8 +28,9 @@ spec:
               enabled: false
             envoyGateway:
               enabled: false
-    - repoURL: oci://docker.io/envoyproxy/gateway-helm
+    - repoURL: oci://docker.io/envoyproxy
       targetRevision: v1.9.0
+      chart: gateway-helm
       helm:
         releaseName: envoy-gateway-system
         valuesObject:
