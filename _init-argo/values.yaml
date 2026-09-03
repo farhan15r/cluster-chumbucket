@@ -1,0 +1,25 @@
+# ArgoCD Helm values — cluster01.chumbucket
+# Chart: argo/argo-cd (source: https://argoproj.github.io/argo-helm)
+#
+# Hanya komponen inti yang dipasang:
+#   - argocd-application-controller
+#   - argocd-server
+#   - argocd-repo-server
+#   - argocd-applicationset-controller (tidak punya toggle enable/disable di chart ini,
+#     tapi ringan dan dibutuhkan kalau nanti pakai ApplicationSet)
+#   - redis (cache, dibutuhkan oleh repo-server & server)
+#
+# Komponen opsional dimatikan karena tidak dibutuhkan untuk lab ini:
+#   - dex-server: SSO/OIDC login, tidak dipakai (cukup login admin/local user)
+#   - notifications-controller: integrasi notifikasi (Slack, email, dll), tidak dipakai
+
+dex:
+  enabled: false
+
+notifications:
+  enabled: false
+
+# redis-ha (multi-replica Redis with Sentinel) sudah disabled secara default di chart,
+# cukup pakai redis single instance bawaan (redis.enabled: true, sudah default) untuk lab ini.
+redis-ha:
+  enabled: false

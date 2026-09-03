@@ -1,0 +1,30 @@
+# Root "app of apps" Application.
+# Ini SATU-SATUNYA manifest yang diapply manual (kubectl apply -f) untuk bootstrap.
+# Setelah ini sinkron, ArgoCD akan otomatis membuat/mengelola semua child Application
+# yang ada di folder apps/ (lihat apps/README.md untuk cara menambah app baru).
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: application-central
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    # TODO: ganti dengan URL remote git repo ini setelah di-push (git remote add origin ...)
+    repoURL: https://github.com/farhan15r/cluster-chumbucket.git
+    targetRevision: main
+    path: apps
+    directory:
+      recurse: true
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
