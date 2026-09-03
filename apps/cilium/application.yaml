@@ -31,6 +31,8 @@ spec:
           enabled: true
         l2announcements:
           enabled: true
+        hubble:
+          enabled: false
   - repoURL: https://github.com/farhan15r/cluster-chumbucket.git
     targetRevision: main
     path: manifests/cilium-config
