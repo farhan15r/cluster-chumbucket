@@ -1,0 +1,53 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/refs/heads/main/argoproj.io/application_v1alpha1.json
+# Envoy Gateway sedang live di cluster01.chumbucket (terpasang via helm release "eg" di
+# namespace envoy-gateway-system). Chart & valuesObject disamakan dengan
+# `helm get values eg -n envoy-gateway-system` saat ini supaya sync pertama tidak
+# mengubah konfigurasi yang sedang berjalan. crds.enabled: false karena CRD (Gateway API
+# & Envoy Gateway) sudah terpasang duluan di cluster (dipakai bareng gateway controller
+# lain), bukan dari chart ini.
+#
+# syncPolicy sengaja MANUAL dulu (bukan automated): cek diff-nya dulu di ArgoCD
+# (`argocd app diff envoy-gateway`) sebelum sync pertama, baru tambahkan
+# automated: {prune, selfHeal} kalau sudah yakin aman.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: envoy-gateway
+  namespace: argocd
+spec:
+  project: default
+
+  sources:
+    - repoURL: oci://docker.io/envoyproxy/gateway-crds-helm
+      targetRevision: v1.9.0
+      helm:
+        valuesObject:
+          crds:
+            gatewayAPI:
+              enabled: false
+            envoyGateway:
+              enabled: false
+    - repoURL: oci://docker.io/envoyproxy/gateway-helm
+      targetRevision: v1.9.0
+      helm:
+        releaseName: envoy-gateway-system
+        valuesObject:
+          crds:
+            enabled: false
+          config:
+            envoyGateway:
+              provider:
+                kubernetes:
+                  deploy:
+                    type: GatewayNamespace
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: envoy-gateway-system
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
