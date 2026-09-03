@@ -5,6 +5,15 @@ Folder ini di-watch oleh `application-central` (lihat `../application-central/ap
 (`kind: Application`, `apiVersion: argoproj.io/v1alpha1`) yang ditaruh di sini —
 langsung di root maupun di dalam subfolder — otomatis akan dibuat/disinkronkan oleh ArgoCD.
 
+> **PENTING**: `directory.recurse: true` berarti `application-central` mencoba
+> meng-apply **semua** manifest yaml yang ada di bawah `apps/`, bukan cuma yang
+> `kind: Application`. Jadi jangan pernah taruh manifest resource mentah (CR, Deployment,
+> dll — yang jadi *target* sebuah child app) di dalam tree `apps/`, karena akan diklaim
+> dobel oleh `application-central` sekaligus child app-nya sendiri. Kalau child app perlu
+> raw manifest di repo yang sama (bukan Helm chart/repo eksternal), taruh di
+> `../manifests/<nama-app>/` (lihat contoh `cilium-config`) dan arahkan `source.path`
+> child app ke situ — bukan ke dalam `apps/`.
+
 ## Menambah app baru
 
 Buat subfolder per app, isi satu manifest `Application` yang menunjuk ke sumber

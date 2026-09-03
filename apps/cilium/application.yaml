@@ -1,11 +1,15 @@
 # Cilium adalah CNI yang sedang live di cluster01.chumbucket (terpasang via helm release
-# "cilium" di namespace kube-system). Chart & valuesObject di bawah ini disamakan dengan
-# `helm get values cilium -n kube-system` saat ini supaya sync pertama tidak mengubah
-# konfigurasi CNI yang sedang berjalan.
+# "cilium" di namespace kube-system, sudah diadopsi ke ArgoCD). Chart & valuesObject
+# disamakan dengan `helm get values cilium -n kube-system` saat adopsi, supaya sync
+# tidak mengubah konfigurasi CNI yang sedang berjalan.
 #
-# syncPolicy sengaja MANUAL (bukan automated) untuk app ini: cek dulu diff-nya di
-# ArgoCD (App Diff / `argocd app diff cilium`) sebelum sync, karena ini komponen
-# jaringan inti cluster — kalau sudah yakin aman, baru tambahkan automated: {prune, selfHeal}.
+# Multi-source: source pertama = chart Helm cilium dari repo resmi. Source kedua = CR
+# konfigurasi asli Cilium (CiliumL2AnnouncementPolicy, CiliumLoadBalancerIPPool) dari
+# repo git ini — digabung di sini (bukan app terpisah) karena satu kesatuan config
+# Cilium. CRD Cilium sendiri sengaja tidak dikelola di sini: dipasang lewat folder
+# crds/ chart Helm yang di luar jangkauan `helm template`/ArgoCD, dan sudah ada
+# duluan di cluster. CiliumNode/CiliumIdentity/CiliumEndpoint juga tidak masuk git
+# karena itu runtime state yang di-generate otomatis oleh cilium-operator/agent.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -27,6 +31,9 @@ spec:
           enabled: true
         l2announcements:
           enabled: true
+  - repoURL: https://github.com/farhan15r/cluster-chumbucket.git
+    targetRevision: main
+    path: manifests/cilium-config
 
   destination:
     server: https://kubernetes.default.svc
