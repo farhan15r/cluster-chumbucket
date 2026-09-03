@@ -24,10 +24,10 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: <url repo manifest/helm chart nama-app>
-    targetRevision: main
-    path: <path di dalam repo tsb>
+  sources:
+    - repoURL: <url repo manifest/helm chart nama-app>
+      targetRevision: main
+      path: <path di dalam repo tsb>
   destination:
     server: https://kubernetes.default.svc
     namespace: <namespace tujuan>
