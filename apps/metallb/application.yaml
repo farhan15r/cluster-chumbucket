@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/refs/heads/main/argoproj.io/application_v1alpha1.json
+# MetalLB menggantikan fungsi LoadBalancer IP announcement yang dulu dipegang Cilium
+# (kubeProxyReplacement + L2 announcements, lihat manifests/cilium-config/ bekas).
+# Calico (CNI saat ini) sengaja tidak melakukan L2 announcement untuk service
+# LoadBalancer, jadi MetalLB dipasang terpisah khusus untuk itu.
+#
+# Chart resmi metallb/metallb sudah bundle CRD-nya sendiri (beda dengan Cilium/Calico
+# yang butuh chart CRD terpisah). Mode yang dipakai: native L2 (speaker ARP/NDP),
+# BUKAN BGP — frrk8s/frr sengaja dibiarkan default (disabled), karena semua node ada
+# di L2 subnet yang sama (192.168.100.0/24), sama seperti mode l2announcements di
+# Cilium sebelumnya.
+#
+# Source kedua = IPAddressPool + L2Advertisement dari repo git ini, reuse persis
+# range IP yang sama dengan CiliumLoadBalancerIPPool lama (192.168.100.190-199) —
+# itu range yang memang direservasi di LAN untuk LoadBalancer IP.
+#
+# syncPolicy sengaja MANUAL dulu: speaker MetalLB akan mengirim gratuitous ARP ke
+# seluruh LAN begitu ada Service LoadBalancer, jadi cek diff-nya dulu
+# (`argocd app diff metallb`) sebelum sync pertama.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: metallb
+  namespace: argocd
+spec:
+  project: default
+
+  sources:
+    - repoURL: https://metallb.github.io/metallb
+      chart: metallb
+      targetRevision: 0.16.1
+    - repoURL: https://github.com/farhan15r/cluster-chumbucket.git
+      targetRevision: main
+      path: manifests/metallb-config
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: metallb-system
+
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
