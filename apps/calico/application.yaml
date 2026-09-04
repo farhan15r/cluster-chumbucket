@@ -34,7 +34,7 @@ spec:
                   cidr: 10.64.0.0/12
                   disableBGPExport: false
                   disableNewAllocations: false
-                  encapsulation: VXLAN
+                  encapsulation: None
                   natOutgoing: Enabled
                   nodeSelector: all()
           kubernetesServiceEndpoint:
