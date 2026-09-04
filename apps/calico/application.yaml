@@ -45,7 +45,7 @@ spec:
           whisker:
             enabled: false
           apiServer:
-            enabled: false
+            enabled: true
 
   destination:
     server: https://kubernetes.default.svc
