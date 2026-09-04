@@ -8,27 +8,33 @@ metadata:
 spec:
   project: default
 
-  source:
-    repoURL: https://projectcalico.docs.tigera.io/charts
-    chart: tigera-operator
-    targetRevision: v3.32.2
-    helm:
-      valuesObject:
-        installation:
-          calicoNetwork:
-            linuxDataplane: BPF
-            ipPools:
-              - cidr: 10.64.0.0/12
-                encapsulation: VXLAN
-                natOutgoing: Enabled
-                blockSize: 26
-        kubernetesServiceEndpoint:
-          host: cp.cluster01.local
-          port: "6443"
-        goldmane:
-          enabled: false
-        whisker:
-          enabled: false
+  sources:
+    - repoURL: https://projectcalico.docs.tigera.io/charts
+      chart: crd.projectcalico.org.v1
+      targetRevision: v3.32.2
+      helm:
+        releaseName: calico-crds
+    - repoURL: https://projectcalico.docs.tigera.io/charts
+      chart: tigera-operator
+      targetRevision: v3.32.2
+      helm:
+        releaseName: calico
+        valuesObject:
+          installation:
+            calicoNetwork:
+              linuxDataplane: BPF
+              ipPools:
+                - cidr: 10.64.0.0/12
+                  encapsulation: VXLAN
+                  natOutgoing: Enabled
+                  blockSize: 26
+          kubernetesServiceEndpoint:
+            host: cp.cluster01.local
+            port: "6443"
+          goldmane:
+            enabled: false
+          whisker:
+            enabled: false
 
   destination:
     server: https://kubernetes.default.svc
