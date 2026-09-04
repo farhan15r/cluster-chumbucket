@@ -24,11 +24,18 @@ spec:
             calicoNetwork:
               linuxDataplane: BPF
               ipPools:
-                - cidr: 10.64.0.0/12
+                - name: default-ipv4-ippool
+                  allowedUses:
+                    - Workload
+                    - Tunnel
+                  assignmentMode: Automatic
+                  blockSize: 26
+                  cidr: 10.64.0.0/12
+                  disableBGPExport: false
+                  disableNewAllocations: false
                   encapsulation: VXLAN
                   natOutgoing: Enabled
-                  disableBGPExport: false
-                  blockSize: 26
+                  nodeSelector: all()
           kubernetesServiceEndpoint:
             host: cp.cluster01.local
             port: "6443"
