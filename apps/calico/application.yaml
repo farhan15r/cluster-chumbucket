@@ -27,6 +27,7 @@ spec:
                 - cidr: 10.64.0.0/12
                   encapsulation: VXLAN
                   natOutgoing: Enabled
+                  disableBGPExport: false
                   blockSize: 26
           kubernetesServiceEndpoint:
             host: cp.cluster01.local
