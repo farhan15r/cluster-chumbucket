@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/refs/heads/main/argoproj.io/application_v1alpha1.json
+# Gateway API CRDs (upstream kubernetes-sigs/gateway-api, channel "standard") sudah
+# terpasang duluan di cluster (v1.6.1, dipasang lewat chart envoy-gateway dengan
+# crds.gatewayAPI.enabled: false — lihat apps/envoy-gateway/application.yaml), tapi
+# belum ada yang benar-benar mengelolanya lewat GitOps. App ini mengambil alih
+# management-nya sekaligus naik ke v1.6.2, masih di channel yang sama (standard),
+# jadi bukan ganti channel.
+#
+# syncPolicy sengaja MANUAL dulu (sama seperti pola di apps/envoy-gateway): cek
+# diff-nya dulu di ArgoCD (`argocd app diff gateway-api`) sebelum sync pertama,
+# baru tambahkan automated: {prune, selfHeal} kalau sudah yakin aman — CRD ini
+# dipakai bareng envoy-gateway (gateway controller lain yang live di cluster).
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gateway-api
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/farhan15r/cluster-chumbucket.git
+    targetRevision: main
+    path: manifests/gateway-api
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
