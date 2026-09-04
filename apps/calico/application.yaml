@@ -21,6 +21,7 @@ spec:
         releaseName: calico
         valuesObject:
           installation:
+            controlPlaneReplicas: 1
             calicoNetwork:
               linuxDataplane: BPF
               ipPools:
@@ -42,6 +43,8 @@ spec:
           goldmane:
             enabled: false
           whisker:
+            enabled: false
+          apiServer:
             enabled: false
 
   destination:
