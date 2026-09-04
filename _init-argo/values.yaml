@@ -23,3 +23,23 @@ notifications:
 # cukup pakai redis single instance bawaan (redis.enabled: true, sudah default) untuk lab ini.
 redis-ha:
   enabled: false
+
+# TLS di-terminate di Gateway (Envoy Gateway, listener https di namespace infra),
+# jadi argocd-server tidak perlu TLS-nya sendiri lagi di belakang gateway - ini juga
+# yang direkomendasikan resmi oleh Argo CD kalau TLS di-terminate di ingress/gateway
+# (lihat https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/).
+configs:
+  params:
+    server.insecure: true
+
+server:
+  # Gateway API HTTPRoute untuk expose argocd-server lewat Envoy Gateway
+  # (apps/infra-gateway), bukan lewat Ingress.
+  httproute:
+    enabled: true
+    parentRefs:
+      - name: envoy-gateway
+        namespace: infra
+        sectionName: https
+    hostnames:
+      - argo01.chumbucket.my.id
