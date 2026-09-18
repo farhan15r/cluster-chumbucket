@@ -1,0 +1,15 @@
+# StorageClass tambahan, provisioner sama persis dengan "local-path" bawaan
+# (rancher.io/local-path), cuma reclaimPolicy-nya Retain, bukan Delete.
+# Reclaim policy itu field generik Kubernetes di level StorageClass, jadi
+# provisioner mana pun otomatis menghormatinya tanpa perlu config tambahan.
+#
+# Pakai storageClassName: local-path-retain di PVC/Cluster kalau butuh PV-nya
+# TETAP ADA (nggak ikut kehapus) walau PVC-nya dihapus — cocok buat data yang
+# nggak mau ke-reclaim otomatis (mis. sebelum yakin data itu aman dibuang).
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: local-path-retain
+provisioner: rancher.io/local-path
+reclaimPolicy: Retain
+volumeBindingMode: WaitForFirstConsumer
