@@ -18,8 +18,8 @@ spec:
     namespace: demo-db
 
   syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+    # automated sync sengaja dimatikan sementara buat eksperimen orphan/reclaim-policy
+    # testing (biar CR yang di-delete manual nggak langsung di-recreate sama selfHeal).
+    # Balikin lagi ke automated: {prune: true, selfHeal: true} setelah selesai.
     syncOptions:
       - CreateNamespace=true
