@@ -12,7 +12,7 @@ spec:
     name: demo-db
   name: service_b
   login: true
-  connectionLimit: -1
+  connectionLimit: 50
   passwordSecret:
     name: service-b-credentials
 ---
