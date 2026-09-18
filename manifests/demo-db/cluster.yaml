@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/refs/heads/main/postgresql.cnpg.io/cluster_v1.json
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: demo-db
+  namespace: demo-db
+spec:
+  # Non-HA: 1 instance saja, nggak ada replica/failover otomatis.
+  instances: 1
+
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.6-standard-trixie
+
+  storage:
+    size: 1Gi
+    storageClass: local-path
