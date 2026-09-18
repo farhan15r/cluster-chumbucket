@@ -12,6 +12,7 @@ spec:
     name: demo-db
   name: service_b
   login: true
+  connectionLimit: -1
   passwordSecret:
     name: service-b-credentials
 ---
@@ -25,3 +26,4 @@ spec:
     name: demo-db
   name: service_b
   owner: service_b
+  connectionLimit: -1
