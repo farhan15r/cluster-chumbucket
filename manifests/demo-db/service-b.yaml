@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/refs/heads/main/postgresql.cnpg.io/databaserole_v1.json
+# Secret "service-b-credentials" sengaja TIDAK ada di sini / di git (repo ini public).
+# Sudah di-apply manual sekali via kubectl langsung ke cluster (type kubernetes.io/basic-auth,
+# key username + password), CR di bawah ini cuma reference nama Secret-nya.
+apiVersion: postgresql.cnpg.io/v1
+kind: DatabaseRole
+metadata:
+  name: service-b
+  namespace: demo-db
+spec:
+  cluster:
+    name: demo-db
+  name: service_b
+  login: true
+  passwordSecret:
+    name: service-b-credentials
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: service-b
+  namespace: demo-db
+spec:
+  cluster:
+    name: demo-db
+  name: service_b
+  owner: service_b

@@ -5,3 +5,4 @@ resources:
   - namespace.yaml
   - cluster.yaml
   - service-a.yaml
+  - service-b.yaml
